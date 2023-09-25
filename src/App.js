@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+
+import React, { useState } from "react";
+import "./styles/App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Inicio from "./componets/Inicio";
+import CrearEncuesta from "./componets/CrearEncuesta";
+import Encuesta from "./componets/Encuesta";
+import Menu from "./componets/Menu";
+import NotFound from "./componets/NotFound";
+import encuestas from "./data/encuestas.json"
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+  const [listaEncuestas, setListaEncuestas] =
+  useState(encuestas);
+  const agregarEncuesta = (nuevaEncuesta) => {
+    nuevaEncuesta.id = listaEncuestas.length + 1
+    setListaEncuestas([...listaEncuestas, nuevaEncuesta]);
+  };
 
-export default App;
+  const responderEncuesta = (id, respuesta) => {
+    const encuesta = listaEncuestas.find(enc => enc.id ===
+      parseInt(id));
+    encuesta.respuestas = [respuesta];
+
+  };
+
+  return (
+    <BrowserRouter>
+    <Menu /> {/* Agrega el menú de navegación */}
+    <Routes>
+    <Route path="/" element={<Inicio
+    listaEncuestas={listaEncuestas} />} />
+    <Route path="/encuesta/crear" element={<CrearEncuesta
+    agregarEncuesta={agregarEncuesta} />} />
+    <Route path="/encuesta/:id" element={<Encuesta
+    listaEncuestas={listaEncuestas}
+    responderEncuesta={responderEncuesta} />} />
+    <Route path="*" element={<NotFound />} />
+    </Routes>
+    </BrowserRouter>
+    );
+    }
+    export default App;
